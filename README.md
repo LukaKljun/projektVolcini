@@ -1,1 +1,16 @@
 # projektVolcini
+
+Pins:
+servo io 3
+DHTPIN 2
+DHTTYPE DHT11
+
+BUZZER_PIN 8
+BUTTON_PIN 3
+JOY_SW 4
+SERVo pin 9
+LDR_PIN A0
+MQ_PIN A1
+JOY_X A2
+JOY_Y A3
+
