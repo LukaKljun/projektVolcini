@@ -4,7 +4,6 @@
 #include <DHT.h>
 #include <Servo.h>
 
-// === PIN SETUP ===
 #define DHTPIN 2
 #define DHTTYPE DHT11
 
@@ -31,7 +30,7 @@ int page = 0;
 const int totalPages = 3;
 
 //--------------------------nastavitve
-int darkThreshold = 680;   // light sensor
+int darkThreshold = 680;
 int mqThreshold = 130;
 int doorOpenPos = 0;
 int doorClosedPos = 90;
@@ -45,11 +44,9 @@ void playChime(int pin) {
   noTone(pin);
   delay(80);
 
-  // Bright confirmation beep
   tone(pin, 1400, 120);
   delay(150);
 
-  // Soft fade-out sweep
   for (int f = 1200; f >= 700; f -= 8) {
     tone(pin, f);
     delay(3);
@@ -92,8 +89,7 @@ void setup() {
   tone(BUZZER_PIN, 1500, 200);
   delay(200);
 }
-
-// === DISPLAY FUNCTION ===
+//displey
 void showPage(int pg, int ldrVal, int mqVal, float temp, float hum, bool doorOpen) {
   display.clearDisplay();
   display.setCursor(0,0);
@@ -130,7 +126,6 @@ void showPage(int pg, int ldrVal, int mqVal, float temp, float hum, bool doorOpe
 }
 
 void loop() {
-  // === READ SENSORS ===
   int ldrVal = analogRead(LDR_PIN);
   int mqVal = analogRead(MQ_PIN);
   int joyX = analogRead(JOY_X);
@@ -141,7 +136,7 @@ void loop() {
   float temp = dht.readTemperature();
   float hum  = dht.readHumidity();
 
-  // === JOYSTICK PAGE SCROLLING ===
+  // levod esno screen
   if (joyY < 300) {  // UP
     page--;
     if (page < 0) page = totalPages - 1;
@@ -153,14 +148,14 @@ void loop() {
     delay(200);
   }
 
-  // === DOOR CONTROL ===
+  // "vrata"
   if (joyPress) {
     openDoor();
     tone(BUZZER_PIN, 1000, 120);
     delay(200);
   }
 
-  // === AUTO-CLOSE CONDITIONS ===
+  // Zapiranje vrat glede na temo
   if (doorOpen) {
     bool tooDark = ldrVal < darkThreshold;
     bool timedOut = (millis() - lastOpenTime > 3000);
@@ -172,18 +167,17 @@ void loop() {
     }
   }
 
-  // === MQ BREATHING ALARM ===
+  // Co2 alarm
   if (mqVal > mqThreshold) {
     alarmBeep();
   }
 
-  // === RED BUTTON CHIME ===
+  // Rdeči gumb za zvonec
   if (redPress) {
     playChime(BUZZER_PIN);
     delay(300);
   }
 
-  // === SHOW INFO ON SCREEN ===
   showPage(page, ldrVal, mqVal, temp, hum, doorOpen);
 
   delay(50);
